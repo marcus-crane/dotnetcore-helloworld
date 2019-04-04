@@ -4,14 +4,31 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - README.md
+
+pr:
+  autoCancel: true
+  paths:
+    exclude:
+    - README.md
 
 pool:
   vmImage: 'Ubuntu-16.04'
 
 variables:
   buildConfiguration: 'Release'
+  unitTestPath: 'UnitTests/UnitTests.csproj'
 
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-- script: dotnet test UnitTests/UnitTests.csproj
+jobs:
+- job: Build
+  steps:
+  - script: dotnet build --configuration $(buildConfiguration)
+- job: UnitTest
+  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+  steps:
+  - script: dotnet test $(unitTestPath)

@@ -24,11 +24,11 @@ variables:
   buildConfiguration: 'Release'
   unitTestPath: 'UnitTests/UnitTests.csproj'
 
-jobs:
-- job: Build
-  steps:
-  - script: dotnet build --configuration $(buildConfiguration)
-- job: UnitTest
-  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
-  steps:
-  - script: dotnet test $(unitTestPath)
+  jobs:
+  - job: Build
+    steps:
+    - script: dotnet build --configuration $(buildConfiguration)
+  - job: UnitTest
+    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+    steps:
+    - script: dotnet test $(unitTestPath)

@@ -13,6 +13,9 @@ trigger:
 
 pr:
   autoCancel: true
+  branches:
+    include:
+    - master
   paths:
     exclude:
     - README.md
@@ -24,11 +27,14 @@ variables:
   buildConfiguration: 'Release'
   unitTestPath: 'UnitTests/UnitTests.csproj'
 
-  jobs:
-  - job: Build
-    steps:
-    - script: dotnet build --configuration $(buildConfiguration)
-  - job: UnitTest
-    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
-    steps:
-    - script: dotnet test $(unitTestPath)
+steps:
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: Build
+  name: build
+  failOnStderr: true
+  continueOnError: false
+- script: dotnet test $(unitTestPath)
+  displayName: Unit Testing
+  name: unitTest
+  failOnStderr: true
+  continueOnError: false
